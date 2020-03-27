@@ -33,7 +33,14 @@ class App extends Component {
     .then((res) => this.setState({ note: res.data, showNote: true }) )
     .catch((err) => console.log(err.response.data) );
   }
-    
+  
+  submitNote = (data) => {
+    console.log(data);
+    // axios.put(urlFor(`notes/$id`))
+    // .then((res) => this.setState({ title:res.data.titles, content:res.data.content}) )
+    // .catch((err) => console.log(err.response.data) );
+  }
+
   render() {
     const { showNote, notes, note } = this.state;
 
@@ -42,7 +49,8 @@ class App extends Component {
         <Nav toggleNote={this.toggleNote} showNote={showNote}/>   
         { showNote ? 
           <Note
-            note= {note}
+            note={note}
+            submitNote={this.submitNote}
           />
           :
           <List 
