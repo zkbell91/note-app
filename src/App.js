@@ -5,6 +5,8 @@ import List from './components/List';
 import Note from './components/Note';
 import axios from 'axios';
 import urlFor from './helpers/urlFor';
+import Flash from './components/Flash';
+
 
 class App extends Component {
   constructor() {
@@ -13,7 +15,8 @@ class App extends Component {
       showNote: false,
       notes: [],
       note: {},
-      newTag: false
+      newTag: false,
+      error: ''
     };
   }
 
@@ -47,7 +50,14 @@ class App extends Component {
   submitNote = (data, id) => {
     this.performSubmissionRequest(data, id)
     .then((res) => this.setState({ showNote: false}) )
-    .catch((err) => console.log(err.response.data) );
+    .catch((err) => {
+      const { errors } = err.response.data;
+      if (errors.content) {
+        this.setState({ error: "Missing Note Contenet!" });
+      } else if (errors.title) {
+        this.setState({ error: "Missing Note Title!" });
+      }
+    });
   }
 
   deleteNote = (id) => {
@@ -68,21 +78,31 @@ class App extends Component {
   submitTag = (data, noteId) => {
     axios.post(urlFor(`notes/${noteId}/tags`), data)
     .then((res) => this.getNote(noteId) )
-    .catch((err) => console.log(err.response.data) );
+    .catch((err) => {
+      const { errors } = err.response.data;
+      if (errors.name) {
+        this.setState({ error: "Missing Tag Name!"});
+      }
+    });
   }
 
   deleteTag  = (noteId, id) => {
     axios.delete(urlFor(`tags/${id}`))
     .then((res) => this.getNote(noteId) )
     .catch((err) => console.log(err.response.data) );
-}
+  }
+
+  resetError = () => {
+    this.setState({ error: ""});
+  }
   
   render() {
-    const { showNote, notes, note, newTag } = this.state;
+    const { showNote, notes, note, newTag, error } = this.state;
 
     return (
       <div className="App">
         <Nav toggleNote={this.toggleNote} showNote={showNote}/>   
+        {error && <Flash error={error} resetError={this.resetError}/>}
         { showNote ? 
           <Note
             note={note}
