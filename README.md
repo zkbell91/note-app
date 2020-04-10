@@ -1,4 +1,4 @@
-[Screenshot](screenshot.png)
+![Screenshot](screenshot.png)
 # Notes
 
 A reminder list app which allows users to create, edit, tag, and delete notes. 
